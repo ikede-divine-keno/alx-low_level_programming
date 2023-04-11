@@ -1,75 +1,138 @@
-#include "main.h"
+#include <stdio.h>
 #include <stdlib.h>
-/**
-* wordCounterRec - count num of words recursively
-* @str: pointer to char
-* @i: current index
-* Return: number of words
-**/
-int wordCounterRec(char *str, int i)
-{
-	if (str[i] == '\0')
-		return (0);
-	if (str[i] == ' ' && str[i + 1] != ' ' && str[i + 1] != '\0')
-		return (1 + wordCounterRec(str, i + 1));
-	return (wordCounterRec(str, i + 1));
-}
-/**
-* word_counter - counts number of words in 1d array of strings
-* @str: pointer to char
-* Return: number of words
-**/
-int word_counter(char *str)
-{
-	if (str[0] != ' ')
-		return (1 + wordCounterRec(str, 0));
-	return (wordCounterRec(str, 0));
-}
-/**
-* strtow - splits a string into words.
-* @str: string to be splitted
-* Return: pointer to an array of strings (words) or null
-**/
-char **strtow(char *str)
-{
-	char **strDup;
-	int i, n, m, words;
+#include "main.h"
 
-	if (str == NULL || str[0] == 0)
-		return (NULL);
-	words = word_counter(str);
-	if (words < 1)
-		return (NULL);
-	strDup = malloc(sizeof(char *) * (words + 1));
-	if (strDup == NULL)
-		return (NULL);
-	i = 0;
-	while (i < words && *str != '\0')
+/**
+ * _strcmp - Like strcmp.
+ * @s1: string.
+ * @s2: string.
+ * Return: int.
+ */
+int _strcmp(char *s1, char *s2)
+{
+	int i = 0;
+
+
+	while (s1[i] != '\0' && s2[i] != '\0')
+	{
+		if (s1[i] != s2[i])
+		{
+			return (s1[i] - s2[i]);
+		}
+		i++;
+	}
+	return (0);
+}
+
+/**
+  * _strlen - Find the lenght of a string.
+  * @s: String.
+  * @i: Position.
+  * Return: The lenght, integer.
+  */
+int _strlen(char *s, int i)
+{
+	int count = 0;
+
+	while (s[i] != ' ' && s[i] != '\0')
+	{
+		count++;
+		i++;
+	}
+	return (count);
+}
+
+/**
+ * words - Count the numbers of words.
+ * @str: String.
+ *
+ * Return: Number of words.
+ */
+int words(char *str)
+{
+	int count = 0, flag = 0;
+
+	while (*str)
 	{
 		if (*str != ' ')
 		{
-			n = 0;
-			while (str[n] != ' ')
-				n++;
-			strDup[i] = malloc(sizeof(char) * (n + 1));
-			if (strDup[i] == NULL)
-			{
-				while (--i >= 0)
-					free(strDup[--i]);
-				free(strDup);
-				return (NULL);
-			}
-			m = 0;
-			while (m < n)
-			{
-				strDup[i][m] = *str;
-				m++, str++;
-			}
-			strDup[i][m] = '\0';
-			i++;
+			flag = 1;
+		}
+		else if (flag == 1)
+		{
+			count++;
+			flag = 0;
 		}
 		str++;
 	}
-	strDup[i] = '\0';
-	return (strDup);
+	return (count);
+}
+
+/**
+ * _strcpy - Copy elements from a string to another.
+ * @s: String.
+ * @i: Position.
+ * @tmp: Array where it's saved.
+ * Return: The array whit the elements.
+ */
+char *_strcpy(char *s, int i, char *tmp)
+{
+	int j;
+
+	for (j = 0; s[i] != ' ' && s[i] != '\0'; i++, j++)
+	{
+		tmp[j] = s[i];
+	}
+	tmp[j] = '\0';
+
+	return (tmp);
+}
+
+/**
+ * strtow - Extract all the words from an string.
+ * @str: String.
+ *
+ * Return: Array of words.
+ */
+char **strtow(char *str)
+{
+
+	int i = 0, j = 0, pos, t;
+	char **tmp;
+
+	if (str == NULL || _strcmp(str, "") || (words(str) == 0))
+	{
+		return (NULL);
+	}
+	tmp = malloc(sizeof(int *) * (words(str) + 1));
+	if (tmp == NULL)
+	{
+		return (NULL);
+	}
+	while (str[i])
+	{
+		if (str[i] != ' ')
+		{
+			pos = _strlen(str, i);
+			tmp[j] = malloc(sizeof(char) * (pos + 1));
+			if (tmp[j] == NULL)
+			{
+				for (t = j; t >= 0; t--)
+				{
+					free(tmp[t]);
+				}
+				free(tmp);
+				return (NULL);
+			}
+			_strcpy(str, i, tmp[j]);
+			j++;
+			i += pos;
+		}
+		else
+		{
+			i++;
+		}
+	}
+	tmp[j] = NULL;
+	return (tmp);
 }
